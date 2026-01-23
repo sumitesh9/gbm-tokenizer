@@ -1,0 +1,238 @@
+# Tokenizer Evaluation Test Cases
+# This file contains diverse test cases to evaluate tokenizer performance
+# across different character sets, languages, and edge cases
+
+# ============================================================================
+# English Text
+# ============================================================================
+Hello world
+The quick brown fox jumps over the lazy dog
+Machine learning is a powerful tool for natural language processing
+Artificial intelligence and deep learning have revolutionized technology
+Tokenization is an important step in NLP pipelines
+
+# ============================================================================
+# Mixed Devanagari and English
+# ============================================================================
+नमस्कार, my name is सुमितेश
+I am from उत्तराखंड and I speak गढ़वळि
+The word "tokenizer" in Hindi is टोकनाइज़र
+Machine learning मा NLP बहुत important च
+
+# ============================================================================
+# Numbers and Numerals
+# ============================================================================
+1234567890
+0
+42
+3.14159
+-100
++50
+1,234,567
+2024-01-23
+₹1000
+$50.99
+10%
+2^3 = 8
+√16 = 4
+π ≈ 3.14159
+
+# ============================================================================
+# Punctuation and Special Characters
+# ============================================================================
+Hello, world!
+What's up?
+"Quoted text" and 'single quotes'
+Parentheses (and brackets) [and braces] {and more}
+Semicolon; colon: comma, period. question? exclamation!
+Dash - and — em-dash and … ellipsis
+Ampersand & plus + equals = minus - times × divide ÷
+At @ hash # dollar $ percent % caret ^ asterisk *
+Underscore _ backslash \ forward slash / pipe |
+
+# ============================================================================
+# Whitespace and Edge Cases
+# ============================================================================
+Single space
+Multiple    spaces
+Tab	character
+Newline
+character
+Leading spaces
+Trailing spaces    
+Empty line above and below
+
+Just tabs		here
+Mixed  	spaces	and	tabs
+
+# ============================================================================
+# Unicode and Special Characters
+# ============================================================================
+© Copyright symbol
+® Registered trademark
+™ Trademark
+€ Euro symbol
+£ British pound
+¥ Japanese yen
+° Degree symbol
+± Plus-minus
+× Multiplication
+÷ Division
+α β γ Greek letters
+∞ Infinity
+∑ Sigma
+Ω Omega
+π Pi
+λ Lambda
+
+# ============================================================================
+# Emojis and Symbols
+# ============================================================================
+Hello 😀 world 🌍
+I ❤️ programming
+Thumbs up 👍 and down 👎
+🚀 Rocket emoji
+🎉 Celebration 🎊
+🔥 Fire emoji
+💯 Hundred points
+✅ Checkmark
+❌ Cross mark
+⭐ Star
+
+# ============================================================================
+# Code-like Strings
+# ============================================================================
+def hello_world():
+    return "Hello, World!"
+
+function add(a, b) { return a + b; }
+
+SELECT * FROM users WHERE id = 123;
+
+import sentencepiece as spm
+
+class Tokenizer:
+    def __init__(self):
+        pass
+
+# ============================================================================
+# URLs and Paths
+# ============================================================================
+https://www.example.com/path/to/resource?query=value&other=123
+http://localhost:8080/api/v1/endpoint
+file:///Users/username/documents/file.txt
+C:\Users\username\Documents\file.txt
+/home/user/documents/file.txt
+
+# ============================================================================
+# Email Addresses
+# ============================================================================
+user@example.com
+test.email+tag@domain.co.uk
+admin@localhost
+user_name@subdomain.example.org
+
+# ============================================================================
+# Dates and Times
+# ============================================================================
+2024-01-23
+23/01/2024
+January 23, 2024
+2024-01-23T10:30:00Z
+10:30 AM
+14:30:45
+
+# ============================================================================
+# Long Sentences and Paragraphs
+# ============================================================================
+This is a very long sentence that contains many words and should test how the tokenizer handles longer sequences of text without breaking them inappropriately or creating too many tokens that would make the representation inefficient for downstream tasks.
+
+नमस्कार, मैं एक बहुत लंबा वाक्य लिख रहा हूँ जो कई शब्दों को शामिल करता है और यह परीक्षण करना चाहिए कि टोकनाइज़र लंबे पाठ अनुक्रमों को कैसे संभालता है बिना उन्हें अनुचित रूप से तोड़े या बहुत सारे टोकन बनाए जो डाउनस्ट्रीम कार्यों के लिए प्रतिनिधित्व को अक्षम बना देंगे।
+
+# ============================================================================
+# Repeated Characters
+# ============================================================================
+aaaaaaaaaa
+1111111111
+!!!!!!!!!!
+...
+---
+===
++++
+
+# ============================================================================
+# Mixed Case and Formatting
+# ============================================================================
+UPPERCASE TEXT
+lowercase text
+Mixed Case Text
+camelCaseVariable
+snake_case_variable
+PascalCaseClass
+CONSTANT_VALUE
+Title Case Sentence
+
+# ============================================================================
+# Special Unicode Cases
+# ============================================================================
+Café (with accent)
+naïve (with diaeresis)
+résumé (with multiple accents)
+北京 (Chinese characters)
+こんにちは (Japanese hiragana)
+안녕하세요 (Korean)
+مرحبا (Arabic)
+Привет (Cyrillic)
+Γεια σας (Greek)
+
+# ============================================================================
+# Mathematical Expressions
+# ============================================================================
+2 + 2 = 4
+x² + y² = r²
+∫ f(x) dx
+∑(i=1 to n) i = n(n+1)/2
+lim(x→∞) 1/x = 0
+√(a² + b²) = c
+
+# ============================================================================
+# Common Phrases in Multiple Languages
+# ============================================================================
+Hello, how are you?
+नमस्ते, आप कैसे हैं?
+Bonjour, comment allez-vous?
+Hola, ¿cómo estás?
+Guten Tag, wie geht es Ihnen?
+Ciao, come stai?
+
+# ============================================================================
+# Edge Cases - Very Short
+# ============================================================================
+a
+1
+.
+,
+!
+?
+
+# ============================================================================
+# Edge Cases - Single Character Types
+# ============================================================================
+a
+A
+1
+0
+.
+,
+!
+?
+:
+;
+-
+_
++
+=
+@
+#
+$
+%

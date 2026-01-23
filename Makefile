@@ -1,4 +1,4 @@
-.PHONY: activate install train infer clean help
+.PHONY: activate install train infer eval clean help
 
 # Activate the virtual environment in an interactive shell
 activate:
@@ -23,6 +23,11 @@ infer:
 	@echo "Running inference..."
 	@venv/bin/python infer.py
 
+# Evaluate the trained tokenizer using eval.py
+eval:
+	@echo "Evaluating tokenizer..."
+	@venv/bin/python eval.py
+
 # Clean up Python cache files
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} + 2>/dev/null || true
@@ -37,5 +42,6 @@ help:
 	@echo "  make install   - Install dependencies from requirements.txt"
 	@echo "  make train     - Train the tokenizer using train.py"
 	@echo "  make infer     - Run inference using infer.py"
+	@echo "  make eval      - Evaluate the trained tokenizer using eval.py"
 	@echo "  make clean     - Remove Python cache files"
 	@echo "  make help      - Show this help message"
