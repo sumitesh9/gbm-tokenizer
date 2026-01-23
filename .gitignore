@@ -215,3 +215,7 @@ __marimo__/
 
 # Dataset
 corpus.txt
+
+# Tokenizer model files
+*.model
+*.vocab
