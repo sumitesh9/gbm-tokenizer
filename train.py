@@ -8,9 +8,10 @@ print("Number of unique characters: ", len(set(text)))
 spm.SentencePieceTrainer.train(
     input="corpus.txt",
     model_prefix="gbm_tokenizer",
-    vocab_size=130,              # small vocab
+    vocab_size=2450,              # small vocab
     model_type="unigram",       # IMPORTANT
     character_coverage=1.0,
+    max_sentence_length=1000000,
     bos_id=-1,                  # disable BOS
     eos_id=-1,                  # disable EOS
 )

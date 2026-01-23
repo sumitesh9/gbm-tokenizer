@@ -28,6 +28,11 @@ eval:
 	@echo "Evaluating tokenizer..."
 	@venv/bin/python eval.py
 
+# Generate comparison chart from evaluation results
+chart:
+	@echo "Generating comparison chart..."
+	@venv/bin/python generate_chart.py
+
 # Clean up Python cache files
 clean:
 	find . -type d -name "__pycache__" -exec rm -r {} + 2>/dev/null || true
@@ -43,5 +48,6 @@ help:
 	@echo "  make train     - Train the tokenizer using train.py"
 	@echo "  make infer     - Run inference using infer.py"
 	@echo "  make eval      - Evaluate the trained tokenizer using eval.py"
+	@echo "  make chart     - Generate comparison chart from eval results"
 	@echo "  make clean     - Remove Python cache files"
 	@echo "  make help      - Show this help message"

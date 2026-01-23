@@ -1,5 +1,6 @@
 import sentencepiece as spm
 import os
+import json
 from collections import Counter
 
 # Try to import optional dependencies
@@ -411,6 +412,14 @@ def main():
     
     # Print comparison
     print_comparison(results)
+    
+    # Save results to JSON for chart generation
+    try:
+        with open('eval_results.json', 'w') as f:
+            json.dump(results, f, indent=2)
+        print("\n💾 Results saved to eval_results.json (use generate_chart.py to create charts)")
+    except Exception as e:
+        print(f"\n⚠️  Could not save results to JSON: {e}")
     
     print("\n✓ Evaluation complete!")
 

@@ -219,3 +219,8 @@ corpus.txt
 # Tokenizer model files
 *.model
 *.vocab
+
+# Evaluation results (keep chart for README)
+eval_results.json
+# tokenizer_comparison.png  # Keep this for README display
+merge_files.py
