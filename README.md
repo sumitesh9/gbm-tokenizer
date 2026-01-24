@@ -44,6 +44,8 @@ make eval
 
 *Results from evaluation on 152 test cases covering Devanagari, English, mixed content, numbers, Unicode, and edge cases.*
 
+> **Note**: These metrics are generated using the specific test set in `eval.txt` (approx. 238 lines of mixed English/Garhwali/Code/Math). Performance characteristics (especially compression and fertility) will vary on different corpora. Speed benchmarks are hardware-dependent.
+
 ### Hardware Configuration
 
 Benchmarks were run on the following system:
