@@ -25,6 +25,11 @@ def train_tokenizer(
         f"--byte_fallback=true "  # Enable byte fallback for 100% coverage
         f"--normalization_rule_name=nmt_nfkc " # Standard normalization
         f"--remove_extra_whitespaces=false " # Preserve whitespace
+        f"--max_sentencepiece_length=20"
+        f"--split_by_unicode_script=true"
+        f"--split_by_whitespace=true"
+        f"--split_by_number=true"
+        f"--num_sub_iterations=4"
         f"--pad_id=0 --unk_id=1 --bos_id=2 --eos_id=3 "
     )
     
