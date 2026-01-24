@@ -32,15 +32,15 @@ make eval
 
 | Tokenizer | Vocab Size | Compression | Accuracy | Fertility | Speed |
 |-----------|------------|-------------|----------|-----------|-------|
-| **GBM Tokenizer** ⭐ | 8,000 | 1.91x | 98.0% | 3.09 | ~2.8M t/s |
-| GPT-4o (o200k) | 199,998 | 3.48x | 100.0% | 1.69 | ~1.2M t/s |
-| Gemma 3 | 262,144 | 3.28x | 100.0% | 1.80 | ~0.4M t/s |
-| Llama 3 | 128,000 | 3.11x | 99.3% | 1.89 | ~0.3M t/s |
-| GPT-4/Claude | 100,256 | 2.62x | 100.0% | 2.24 | ~1.2M t/s |
-| Sarvam-1 | 68,096 | 2.25x | 100.0% | 2.62 | ~0.6M t/s |
-| BERT | 30,522 | 2.82x | 24.3% | 2.09 | ~0.3M t/s |
-| GPT-2 | 50,257 | 2.10x | 100.0% | 2.80 | ~1.6M t/s |
-| Character-level | N/A | 1.00x | 100.0% | 5.89 | ~48M t/s |
+| **GBM Tokenizer** ⭐ | 128,000 | 2.66x | 98.5% | 2.11 | ~2.2M t/s |
+| GPT-4o (o200k) | 199,998 | 2.93x | 100.0% | 1.92 | ~1.2M t/s |
+| Gemma 3 | 262,144 | 3.06x | 100.0% | 1.84 | ~0.5M t/s |
+| Llama 3 | 128,000 | 2.51x | 99.5% | 2.24 | ~0.4M t/s |
+| GPT-4/Claude | 100,256 | 1.77x | 100.0% | 3.18 | ~1.6M t/s |
+| Sarvam-1 | 68,096 | 2.31x | 100.0% | 2.44 | ~0.6M t/s |
+| BERT | 30,522 | 2.27x | 18.2% | 2.48 | ~0.4M t/s |
+| GPT-2 | 50,257 | 1.31x | 100.0% | 4.30 | ~1.8M t/s |
+| Character-level | N/A | 1.00x | 100.0% | 5.63 | ~53M t/s |
 
 *Results from evaluation on 152 test cases covering Devanagari, English, mixed content, numbers, Unicode, and edge cases.*
 
@@ -55,16 +55,16 @@ Benchmarks were run on the following system:
 
 ### Key Highlights
 
-- 📦 **Compact vocabulary** - 8,000 tokens vs 30K+ for general-purpose tokenizers
+- 📦 **Comprehensive vocabulary** - 128,000 tokens matching modern LLM standards
 - 🎯 **Optimized for Garhwali** - Trained on domain-specific corpus (621K+ lines)
-- ⚡ **Efficient tokenization** - 3.1 tokens per word (vs 1.7 for GPT-4o)
-- 🔄 **Good compression** - 1.91x characters per token
-- 🏎️ **High Performance** - ~2.8M tokens/sec encoding speed on CPU (>2x faster than GPT-4o)
+- ⚡ **Efficient tokenization** - 2.11 tokens per word (vs 1.92 for GPT-4o)
+- 🔄 **Excellent compression** - 2.66x characters per token
+- 🏎️ **High Performance** - ~2.2M tokens/sec encoding speed on CPU (~2x faster than GPT-4o)
 
 ## Configuration
 
 Edit `train.py` to customize:
-- `vocab_size`: Vocabulary size (default: 8000)
+- `vocab_size`: Vocabulary size (default: 128000)
 - `model_type`: `"unigram"` or `"bpe"` (default: `"unigram"`)
 - `character_coverage`: Coverage ratio (default: 1.0)
 

@@ -4,7 +4,7 @@ import os
 def train_tokenizer(
     input_file="corpus.txt",
     model_prefix="gbm_tokenizer",
-    vocab_size=8000,
+    vocab_size=128000,
     model_type="unigram",
     character_coverage=1.0
 ):
