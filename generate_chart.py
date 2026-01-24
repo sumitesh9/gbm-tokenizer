@@ -32,8 +32,8 @@ def create_comparison_chart(results, output_path="tokenizer_comparison.png"):
     compression = [r['compression_ratio'] for r in successful]
     accuracy = [r['accuracy'] for r in successful]
     
-    # Create figure with two subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    # Create figure with 2x2 subplots
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
     
     # Color scheme - highlight GBM tokenizer
     colors = ['#2ecc71' if 'GBM' in name else '#3498db' for name in names]
@@ -41,7 +41,7 @@ def create_comparison_chart(results, output_path="tokenizer_comparison.png"):
     # Plot 1: Compression Ratio
     bars1 = ax1.barh(names, compression, color=colors)
     ax1.set_xlabel('Compression Ratio (chars/token)', fontsize=11, fontweight='bold')
-    ax1.set_title('Compression Ratio Comparison', fontsize=13, fontweight='bold')
+    ax1.set_title('Compression Ratio (Higher is Better)', fontsize=13, fontweight='bold')
     ax1.grid(axis='x', alpha=0.3, linestyle='--')
     
     # Add value labels on bars
@@ -51,13 +51,42 @@ def create_comparison_chart(results, output_path="tokenizer_comparison.png"):
     # Plot 2: Accuracy
     bars2 = ax2.barh(names, accuracy, color=colors)
     ax2.set_xlabel('Round-trip Accuracy (%)', fontsize=11, fontweight='bold')
-    ax2.set_title('Accuracy Comparison', fontsize=13, fontweight='bold')
-    ax2.set_xlim(0, 105)
+    ax2.set_title('Accuracy (Higher is Better)', fontsize=13, fontweight='bold')
+    ax2.set_xlim(0, 115) # Make room for labels
     ax2.grid(axis='x', alpha=0.3, linestyle='--')
     
     # Add value labels on bars
     for i, (bar, val) in enumerate(zip(bars2, accuracy)):
         ax2.text(val + 1, i, f'{val:.1f}%', va='center', fontweight='bold')
+
+    # Plot 3: Fertility
+    fertility = [r.get('fertility', 0) for r in successful]
+    bars3 = ax3.barh(names, fertility, color=colors)
+    ax3.set_xlabel('Fertility (tokens/word)', fontsize=11, fontweight='bold')
+    ax3.set_title('Fertility (Lower is Better)', fontsize=13, fontweight='bold')
+    ax3.grid(axis='x', alpha=0.3, linestyle='--')
+
+    # Add value labels on bars
+    for i, (bar, val) in enumerate(zip(bars3, fertility)):
+        ax3.text(val + 0.1, i, f'{val:.2f}', va='center', fontweight='bold')
+
+    # Plot 4: Speed
+    speed = [r.get('speed', 0) for r in successful]
+    bars4 = ax4.barh(names, speed, color=colors)
+    ax4.set_xlabel('Speed (tokens/sec)', fontsize=11, fontweight='bold')
+    ax4.set_title('Encoding Speed (Higher is Better)', fontsize=13, fontweight='bold')
+    ax4.grid(axis='x', alpha=0.3, linestyle='--')
+
+    # Add value labels on bars
+    for i, (bar, val) in enumerate(zip(bars4, speed)):
+        # Format speed with K/M suffixes
+        if val >= 1_000_000:
+            label = f'{val/1_000_000:.1f}M'
+        elif val >= 1_000:
+            label = f'{val/1_000:.1f}K'
+        else:
+            label = f'{val:.0f}'
+        ax4.text(val * 1.05, i, label, va='center', fontweight='bold')
     
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches='tight')

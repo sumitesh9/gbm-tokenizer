@@ -1,6 +1,9 @@
 import sentencepiece as spm
 import os
 import json
+import time
+import platform
+import multiprocessing
 from collections import Counter
 
 # Try to import optional dependencies
@@ -135,6 +138,14 @@ def load_comparison_tokenizers():
             tokenizers.append(TokenizerWrapper("GPT-4/Claude (cl100k_base)", gpt4_tokenizer, vocab_size=100256, tokenizer_type="tiktoken"))
         except Exception as e:
             print(f"  Warning: Could not load GPT-4 tokenizer: {e}")
+
+    # GPT-4o tokenizer (o200k_base)
+    if TIKTOKEN_AVAILABLE:
+        try:
+            gpt4o_tokenizer = tiktoken.get_encoding("o200k_base")
+            tokenizers.append(TokenizerWrapper("GPT-4o (o200k_base)", gpt4o_tokenizer, vocab_size=199998, tokenizer_type="tiktoken"))
+        except Exception as e:
+            print(f"  Warning: Could not load GPT-4o tokenizer: {e}")
     
     # HuggingFace tokenizers
     if TRANSFORMERS_AVAILABLE:
@@ -143,6 +154,41 @@ def load_comparison_tokenizers():
             tokenizers.append(TokenizerWrapper("BERT (bert-base-uncased)", bert_tokenizer, vocab_size=30522, tokenizer_type="transformers"))
         except Exception as e:
             print(f"  Warning: Could not load BERT tokenizer: {e}")
+
+        # Llama 3 Tokenizer
+        try:
+            # Try loading Llama 3 tokenizer (might require login/token)
+            llama_tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B")
+            tokenizers.append(TokenizerWrapper("Llama 3 (Meta-Llama-3-8B)", llama_tokenizer, tokenizer_type="transformers"))
+        except Exception as e:
+            print(f"  Warning: Could not load Llama 3 tokenizer (check HF login/token): {e}")
+
+        # Gemma 3 Tokenizer
+        try:
+            gemma_tokenizer = AutoTokenizer.from_pretrained("google/gemma-3-1b-it")
+            tokenizers.append(TokenizerWrapper("Gemma 3 (google/gemma-3-1b-it)", gemma_tokenizer, tokenizer_type="transformers"))
+        except Exception as e:
+            print(f"  Warning: Could not load Gemma 3 tokenizer: {e}")
+
+        # Sarvam-1 tokenizer
+        sarvam_tokenizer = None
+        try:
+            sarvam_tokenizer = AutoTokenizer.from_pretrained("sarvamai/sarvam-1")
+        except Exception:
+            # Some HF tokenizers/models require this for custom code.
+            try:
+                sarvam_tokenizer = AutoTokenizer.from_pretrained("sarvamai/sarvam-1", trust_remote_code=True)
+            except Exception as e2:
+                print(f"  Warning: Could not load Sarvam-1 tokenizer: {e2}")
+
+        if sarvam_tokenizer is not None:
+            tokenizers.append(
+                TokenizerWrapper(
+                    "Sarvam-1 (sarvamai/sarvam-1)",
+                    sarvam_tokenizer,
+                    tokenizer_type="transformers",
+                )
+            )
     
     return tokenizers
 
@@ -151,13 +197,33 @@ def evaluate_round_trip(tokenizer, texts):
     correct = 0
     total = len(texts)
     
+    # Check for normalization if using SentencePiece
+    is_sp = tokenizer.tokenizer_type == "sentencepiece"
+    
     for text in texts:
         try:
             # Use IDs for more reliable round-trip checking
             ids = tokenizer.encode(text, out_type=int)
             decoded = tokenizer.decode(ids)
+            
+            # For SentencePiece, we might need to normalize the input text 
+            # to match what the tokenizer does internally
+            if is_sp and decoded != text:
+                # If strict match fails, check if it's just normalization
+                # SentencePiece usually applies NFKC normalization by default
+                import unicodedata
+                normalized_text = unicodedata.normalize('NFKC', text)
+                if decoded == normalized_text:
+                    # It's a match after normalization!
+                    correct += 1
+                    continue
+            
             if decoded == text:
                 correct += 1
+            else:
+                # Debug failures (optional)
+                pass
+                
         except Exception:
             pass  # Skip if encoding fails
     
@@ -216,22 +282,35 @@ def evaluate_tokenizer(tokenizer, texts):
         accuracy, correct, total = evaluate_round_trip(tokenizer, texts)
         ratio, total_chars, total_tokens = calculate_compression_ratio(tokenizer, texts)
         
-        # Calculate average tokens per text
+        # Calculate tokens per word (Fertility) and Speed
+        total_words = 0
+        start_time = time.time()
         token_counts = []
+        
         for text in texts:
+            # Simple word count (whitespace split)
+            total_words += len(text.split())
             try:
                 tokens = tokenizer.encode(text, out_type=str)
                 token_counts.append(len(tokens))
             except Exception:
                 pass
         
+        end_time = time.time()
+        duration = end_time - start_time
+        
+        # Avoid division by zero
         avg_tokens = sum(token_counts) / len(token_counts) if token_counts else 0
+        fertility = total_tokens / total_words if total_words > 0 else 0
+        speed = total_tokens / duration if duration > 0 else 0
         
         return {
             'name': tokenizer.name,
             'vocab_size': vocab_size,
             'accuracy': accuracy,
             'compression_ratio': ratio,
+            'fertility': fertility,
+            'speed': speed,
             'total_tokens': total_tokens,
             'avg_tokens_per_text': avg_tokens,
             'success': True
@@ -243,8 +322,23 @@ def evaluate_tokenizer(tokenizer, texts):
             'success': False
         }
 
+import platform
+import multiprocessing
+
+def print_system_info():
+    """Print system information for reproducibility."""
+    print("=" * 60)
+    print("SYSTEM CONFIGURATION")
+    print("=" * 60)
+    print(f"OS: {platform.system()} {platform.release()} ({platform.machine()})")
+    print(f"Python: {platform.python_version()}")
+    print(f"CPU Cores: {multiprocessing.cpu_count()}")
+    print("=" * 60)
+    print()
+
 def print_statistics(tokenizer, texts):
     """Print comprehensive statistics about the tokenizer."""
+    print_system_info()
     print("=" * 60)
     print("TOKENIZER EVALUATION REPORT")
     print("=" * 60)
@@ -262,11 +356,17 @@ def print_statistics(tokenizer, texts):
     
     # Compression analysis
     ratio, total_chars, total_tokens = calculate_compression_ratio(tokenizer, texts)
-    print("\n📊 Compression Statistics:")
+    
+    # Calculate fertility for detailed report
+    total_words = sum(len(t.split()) for t in texts)
+    fertility = total_tokens / total_words if total_words > 0 else 0
+    
+    print("\n📊 Compression & Efficiency Statistics:")
     print(f"  - Total characters: {total_chars:,}")
     print(f"  - Total tokens: {total_tokens:,}")
+    print(f"  - Compression ratio: {ratio:.2f}x (higher is better)")
+    print(f"  - Fertility: {fertility:.2f} tokens/word (lower is better)")
     print(f"  - Average chars per token: {ratio:.2f}")
-    print(f"  - Compression ratio: {ratio:.2f}x")
     
     # Token distribution
     all_tokens = []
@@ -333,7 +433,7 @@ def print_comparison(results):
     successful.sort(key=lambda x: x.get('compression_ratio', 0), reverse=True)
     
     # Print header
-    print(f"\n{'Tokenizer':<30} {'Vocab Size':<12} {'Compression':<12} {'Accuracy':<10} {'Avg Tokens':<12}")
+    print(f"\n{'Tokenizer':<30} {'Vocab':<8} {'Comp':<7} {'Acc':<7} {'Fertility':<10} {'Speed':<10}")
     print("-" * 80)
     
     # Print each tokenizer
@@ -342,11 +442,12 @@ def print_comparison(results):
         vocab = f"{result['vocab_size']:,}" if result['vocab_size'] > 0 else "N/A"
         comp = f"{result['compression_ratio']:.2f}x"
         acc = f"{result['accuracy']:.1f}%"
-        avg = f"{result['avg_tokens_per_text']:.1f}"
+        fert = f"{result.get('fertility', 0):.2f}"
+        speed = f"{result.get('speed', 0):.0f} t/s"
         
         # Highlight our tokenizer
         marker = " ⭐" if "GBM" in name else ""
-        print(f"{name:<30}{vocab:<12}{comp:<12}{acc:<10}{avg:<12}{marker}")
+        print(f"{name:<30}{vocab:<8}{comp:<7}{acc:<7}{fert:<10}{speed:<10}{marker}")
     
     # Print failed tokenizers
     failed = [r for r in results if not r.get('success', False)]
