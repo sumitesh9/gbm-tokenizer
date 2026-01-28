@@ -224,3 +224,6 @@ corpus.txt
 eval_results.json
 # tokenizer_comparison.png  # Keep this for README display
 merge_files.py
+
+# Dataset
+data/
