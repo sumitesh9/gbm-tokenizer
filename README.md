@@ -83,6 +83,22 @@ gbm-tokenizer/
 └── gbm_tokenizer.model   # Trained model (gitignored)
 ```
 
+## UI (Next.js)
+
+There is a single-page Next.js UI in `ui/` that tokenizes text via a server-side API route (the SentencePiece model is **never** sent to the browser).
+
+- **Run locally**
+
+```bash
+cd ui
+npm install
+npm run dev
+```
+
+- **Model file in deployment**
+  - The `.model` file is gitignored; in production the server downloads it from **Azure Blob Storage** at runtime.
+  - Configure `AZURE_STORAGE_CONNECTION_STRING`, `AZURE_MODELS_CONTAINER`, and `GBM_TOKENIZER_BLOB_NAME` (see `ui/.env.example`).
+
 ## License
 
 Public domain ([Unlicense](LICENSE)) - use freely without attribution.
