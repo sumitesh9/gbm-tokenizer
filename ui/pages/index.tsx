@@ -7,10 +7,10 @@ interface TokenizeResult {
   count: number;
   error?: {
     code:
-      | "MODEL_NOT_READY"
-      | "TOKENIZE_FAILED"
-      | "BAD_REQUEST"
-      | "METHOD_NOT_ALLOWED";
+    | "MODEL_NOT_READY"
+    | "TOKENIZE_FAILED"
+    | "BAD_REQUEST"
+    | "METHOD_NOT_ALLOWED";
   };
 }
 
@@ -49,7 +49,65 @@ export default function Home() {
   const [showWhitespace, setShowWhitespace] = useState(true);
   const [uiError, setUiError] = useState<string | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for older browsers
+      textareaRef.current?.select();
+      document.execCommand("copy");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const examples: Array<{ label: string; text: string }> = [
+    { label: "Garhwali", text: "नमस्कार मि एक गढ़वळि टोकनिज़र छो।" },
+    { label: "Mixed", text: "नमस्कार! This is a mixed sentence with English + देवनागरी." },
+    { label: "Numbers", text: "आज तारीख 2026-01-29 छ, कीमत ₹1,23,456.78" },
+    { label: "Emoji", text: "hello 👋🏽 how are you? 🤖✨" },
+    { label: "Whitespace", text: "hello   world\t\tnew\nline" },
+    {
+      label: "Code", text: `संख्याएं = [1, 2, 3, 4, 5]
+व्यक्ति = {"नाम": "राम", "शहर": "देहरादून"}
+
+print(संख्याएं)
+print(व्यक्ति["नाम"])` },
+  ];
+
+  const applyExample = async (value: string) => {
+    setText(value);
+    setUiError(null);
+    textareaRef.current?.focus();
+    // Tokenize immediately without waiting for state update
+    setLoading(true);
+    try {
+      const response = await fetch("/api/tokenize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: value }),
+      });
+      const data: TokenizeResult = await response.json();
+      setResult(data);
+      if (!response.ok || data.error) {
+        setUiError(
+          friendlyErrorMessage((data.error?.code ?? "TOKENIZE_FAILED") as NonNullable<
+            TokenizeResult["error"]
+          >["code"])
+        );
+      }
+    } catch {
+      setResult({ tokens: [], ids: [], count: 0, error: { code: "TOKENIZE_FAILED" } });
+      setUiError("Something went wrong while tokenizing. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleTokenize = useCallback(async () => {
     if (!text.trim()) {
@@ -154,19 +212,76 @@ export default function Home() {
               {loading ? "Tokenizing..." : "Tokenize"}
             </button>
 
-            <div className="border border-gray-300 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm dark:shadow-lg dark:shadow-black/20">
+            {/* Examples */}
+            <div className="border border-gray-200 dark:border-slate-800 rounded-lg p-3 bg-white/60 dark:bg-slate-950/40">
+              <div className="text-xs font-semibold text-gray-600 dark:text-slate-400 mb-2">
+                Examples
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {examples.map((ex) => (
+                  <button
+                    key={ex.label}
+                    type="button"
+                    onClick={() => applyExample(ex.text)}
+                    className="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-900 transition-colors"
+                  >
+                    {ex.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative border border-gray-300 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm dark:shadow-lg dark:shadow-black/20">
               <textarea
                 ref={textareaRef}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter text to tokenize..."
-                className="w-full h-64 sm:h-96 p-4 text-sm sm:text-base font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-gray-500"
+                className="w-full h-64 sm:h-96 p-4 pr-12 text-sm sm:text-base font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-gray-500"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     handleTokenize();
                   }
                 }}
               />
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="absolute bottom-2 right-2 p-1.5 rounded-md bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                title="Copy text"
+              >
+                {copied ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="text-green-600 dark:text-green-400"
+                  >
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
 
