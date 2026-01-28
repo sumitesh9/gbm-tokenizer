@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
-import { ensureGbmModelDownloaded } from "../../lib/azureModel";
+import { ensureGbmModelDownloaded } from "../../utils/azureModel";
 
 type TokenizeErrorCode =
   | "MODEL_NOT_READY"
