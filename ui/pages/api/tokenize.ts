@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { spawn } from "child_process";
-import path from "path";
-import fs from "fs";
 import { ensureGbmModelDownloaded } from "../../utils/azureModel";
+import { getSentencePiece } from "../../utils/spTokenizer";
 
 type TokenizeErrorCode =
   | "MODEL_NOT_READY"
-  | "PYTHON_NOT_AVAILABLE"
   | "TOKENIZE_FAILED"
   | "BAD_REQUEST"
   | "METHOD_NOT_ALLOWED";
@@ -20,104 +17,15 @@ type TokenizeResponse = {
   };
 };
 
-function tokenizeText(text: string): Promise<TokenizeResponse> {
-  return new Promise((resolve) => {
-    try {
-      const scriptPath = path.join(process.cwd(), "tokenize_api.py");
-
-      // Check if Python script exists
-      if (!fs.existsSync(scriptPath)) {
-        resolve({
-          tokens: [],
-          ids: [],
-          count: 0,
-          error: { code: "PYTHON_NOT_AVAILABLE" },
-        });
-        return;
-      }
-
-      // Spawn Python process (ensure env passed through)
-      const pythonProcess = spawn("python3", [scriptPath], {
-        stdio: ["pipe", "pipe", "pipe"],
-        env: {
-          ...process.env, // Inherit all environment variables
-        },
-      });
-
-      let stdout = "";
-
-      pythonProcess.stdout.on("data", (data) => {
-        stdout += data.toString();
-      });
-
-      // Intentionally ignore stderr to avoid leaking internals to clients/logs.
-      // (We return a generic error code instead.)
-      pythonProcess.stderr.on("data", () => {});
-
-      pythonProcess.on("close", (code) => {
-        if (code !== 0) {
-          resolve({
-            tokens: [],
-            ids: [],
-            count: 0,
-            error: { code: "TOKENIZE_FAILED" },
-          });
-          return;
-        }
-
-        try {
-          let result;
-          try {
-            result = JSON.parse(stdout.trim());
-            if (result && typeof result === "object" && "error" in result) {
-              resolve({
-                tokens: [],
-                ids: [],
-                count: 0,
-                error: { code: "TOKENIZE_FAILED" },
-              });
-              return;
-            }
-            resolve(result as TokenizeResponse);
-          } catch {
-            resolve({
-              tokens: [],
-              ids: [],
-              count: 0,
-              error: { code: "TOKENIZE_FAILED" },
-            });
-          }
-        } catch {
-          resolve({
-            tokens: [],
-            ids: [],
-            count: 0,
-            error: { code: "TOKENIZE_FAILED" },
-          });
-        }
-      });
-
-      pythonProcess.on("error", () => {
-        resolve({
-          tokens: [],
-          ids: [],
-          count: 0,
-          error: { code: "PYTHON_NOT_AVAILABLE" },
-        });
-      });
-
-      // Write text to stdin
-      pythonProcess.stdin.write(text, "utf-8");
-      pythonProcess.stdin.end();
-    } catch {
-      resolve({
-        tokens: [],
-        ids: [],
-        count: 0,
-        error: { code: "TOKENIZE_FAILED" },
-      });
-    }
-  });
+async function tokenizeText(text: string, modelPath: string): Promise<TokenizeResponse> {
+  try {
+    const spp = await getSentencePiece(modelPath);
+    const ids = spp.encodeIds(text);
+    const tokens = spp.encodePieces(text);
+    return { tokens, ids, count: tokens.length };
+  } catch {
+    return { tokens: [], ids: [], count: 0, error: { code: "TOKENIZE_FAILED" } };
+  }
 }
 
 export default async function handler(
@@ -166,10 +74,7 @@ export default async function handler(
     });
   }
 
-  // Tell the Python script exactly where the model is on disk.
-  process.env.GBM_TOKENIZER_MODEL_PATH = ensured.localPath;
-
-  const result = await tokenizeText(text);
+  const result = await tokenizeText(text, ensured.localPath);
 
   if (result.error) {
     console.error("[api/tokenize]", {

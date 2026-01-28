@@ -8,7 +8,6 @@ interface TokenizeResult {
   error?: {
     code:
       | "MODEL_NOT_READY"
-      | "PYTHON_NOT_AVAILABLE"
       | "TOKENIZE_FAILED"
       | "BAD_REQUEST"
       | "METHOD_NOT_ALLOWED";
@@ -33,8 +32,6 @@ function friendlyErrorMessage(code: NonNullable<TokenizeResult["error"]>["code"]
   switch (code) {
     case "MODEL_NOT_READY":
       return "Tokenizer is warming up. Please try again in a few seconds.";
-    case "PYTHON_NOT_AVAILABLE":
-      return "Tokenizer backend is not available right now.";
     case "BAD_REQUEST":
       return "Please enter some text to tokenize.";
     case "METHOD_NOT_ALLOWED":

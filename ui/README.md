@@ -15,7 +15,7 @@ Open `http://localhost:3000`.
 ## How tokenization works (security)
 
 - The browser calls `POST /api/tokenize`.
-- Tokenization runs **server-side** (Node spawns `tokenize_api.py`).
+- Tokenization runs **server-side** in Node (SentencePiece via WASM).
 
 ## Model file (not in git)
 
