@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 interface TokenizeResult {
   tokens: string[];
@@ -48,6 +48,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showWhitespace, setShowWhitespace] = useState(true);
   const [uiError, setUiError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleTokenize = useCallback(async () => {
     if (!text.trim()) {
@@ -92,6 +93,11 @@ export default function Home() {
   useEffect(() => {
     handleTokenize();
   }, [handleTokenize]);
+
+  // Focus textarea on page load/refresh
+  useEffect(() => {
+    textareaRef.current?.focus();
+  }, []);
 
   const renderToken = (token: string, index: number) => {
     const colorClass = TOKEN_COLORS[index % TOKEN_COLORS.length];
@@ -138,6 +144,7 @@ export default function Home() {
 
             <div className="border border-gray-300 dark:border-slate-800 rounded-lg overflow-hidden shadow-sm dark:shadow-lg dark:shadow-black/20">
               <textarea
+                ref={textareaRef}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter text to tokenize..."
