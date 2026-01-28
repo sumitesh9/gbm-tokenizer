@@ -196,7 +196,16 @@ print(व्यक्ति["नाम"])` },
         {/* Header */}
         <header className="mb-6 sm:mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-slate-50">
-            GBM Tokenizer
+            (iso-639-3: gbm){" "}
+            <a
+              href="https://en.wikipedia.org/wiki/Garhwali_language"
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:underline transition-colors"
+            >
+              Garhwali
+            </a>{" "}
+            Tokenizer
           </h1>
         </header>
 
