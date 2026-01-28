@@ -48,6 +48,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [showWhitespace, setShowWhitespace] = useState(true);
   const [uiError, setUiError] = useState<string | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleTokenize = useCallback(async () => {
@@ -106,10 +107,21 @@ export default function Home() {
       ? token.replace(/ /g, "·")
       : token;
 
+    const isHovered = hoveredIndex === index;
+
     return (
       <span
         key={index}
-        className={`${colorClass} px-1 py-0.5 rounded text-sm font-mono text-gray-900 dark:text-slate-100 dark:backdrop-blur-sm`}
+        onMouseEnter={() => setHoveredIndex(index)}
+        onMouseLeave={() => setHoveredIndex(null)}
+        className={[
+          colorClass,
+          "px-1 py-0.5 rounded text-sm font-mono text-gray-900 dark:text-slate-100 dark:backdrop-blur-sm",
+          "transition-shadow cursor-default",
+          isHovered
+            ? "ring-2 ring-blue-500/70 dark:ring-blue-300/80 shadow-sm dark:bg-blue-300/10"
+            : "ring-0",
+        ].join(" ")}
       >
         {displayToken}
       </span>
@@ -204,8 +216,32 @@ export default function Home() {
                 <div className="text-sm font-semibold text-gray-700 dark:text-slate-400 mb-3">
                   Token IDs
                 </div>
-                <div className="font-mono text-xs sm:text-sm text-gray-800 dark:text-slate-300 wrap-break-word overflow-x-auto max-h-48">
-                  {result.ids.join(", ")}
+                <div className="font-mono text-xs sm:text-sm text-gray-800 dark:text-slate-300 overflow-x-auto max-h-48 min-w-0">
+                  <div className="flex flex-wrap gap-x-1 gap-y-1">
+                    {result.ids.map((id, index) => {
+                      const isHovered = hoveredIndex === index;
+                      return (
+                        <span key={index} className="inline-flex items-center">
+                          <span
+                            onMouseEnter={() => setHoveredIndex(index)}
+                            onMouseLeave={() => setHoveredIndex(null)}
+                            className={[
+                              "px-1 py-0.5 rounded",
+                              "transition-colors cursor-default",
+                              isHovered
+                                ? "bg-blue-100 text-blue-900 dark:bg-blue-400/20 dark:text-blue-50 ring-1 ring-blue-500/40 dark:ring-blue-300/50 border border-blue-500/30 dark:border-blue-300/40"
+                                : "bg-transparent",
+                            ].join(" ")}
+                          >
+                            {id}
+                          </span>
+                          {index < result.ids.length - 1 && (
+                            <span className="text-gray-400 dark:text-slate-600">,</span>
+                          )}
+                        </span>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             )}
