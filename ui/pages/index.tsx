@@ -216,7 +216,7 @@ print(व्यक्ति["नाम"])` },
               href="https://github.com/sumitesh9/gbm-tokenizer"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-700 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-700 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
               aria-label="GitHub repository"
             >
               <svg
@@ -238,7 +238,7 @@ print(व्यक्ति["नाम"])` },
               href="https://huggingface.co/somu9/gbm-tokenizer"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-900 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-900 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
               aria-label="Download tokenizer from Hugging Face"
             >
               <span className="inline-flex p-1 rounded bg-yellow-400">
@@ -261,7 +261,7 @@ print(व्यक्ति["नाम"])` },
             <button
               onClick={handleTokenize}
               disabled={loading || !text.trim()}
-              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:bg-gray-400 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-all text-base sm:text-lg shadow-sm dark:shadow-blue-500/20"
+              className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:bg-gray-400 dark:disabled:bg-gray-700 disabled:cursor-not-allowed cursor-pointer text-white font-semibold py-3 px-6 rounded-lg transition-all text-base sm:text-lg shadow-sm dark:shadow-blue-500/20"
             >
               {loading ? "Tokenizing..." : "Tokenize"}
             </button>
@@ -277,7 +277,7 @@ print(व्यक्ति["नाम"])` },
                     key={ex.label}
                     type="button"
                     onClick={() => applyExample(ex.text)}
-                    className="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-900 transition-colors"
+                    className="px-2 py-1 text-xs rounded-md border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-900 transition-colors cursor-pointer"
                   >
                     {ex.label}
                   </button>
@@ -301,7 +301,7 @@ print(व्यक्ति["नाम"])` },
               <button
                 type="button"
                 onClick={handleCopy}
-                className="absolute bottom-2 right-2 p-1.5 rounded-md bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+                className="absolute bottom-2 right-2 p-1.5 rounded-md bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 title="Copy text"
               >
                 {copied ? (
