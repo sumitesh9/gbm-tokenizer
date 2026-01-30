@@ -2,6 +2,8 @@
 
 A SentencePiece unigram tokenizer optimized for Garhwali (GBM - ISO 639-3), handling Devanagari script with mixed-language support.
 
+**Pre-trained tokenizer (gated access):** [somu9/gbm-tokenizer](https://huggingface.co/somu9/gbm-tokenizer) on Hugging Face.
+
 ## Quick Start
 
 ```bash

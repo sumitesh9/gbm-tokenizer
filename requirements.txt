@@ -1,4 +1,6 @@
 datasets
+python-dotenv
+huggingface_hub
 sentencepiece
 tiktoken
 transformers
