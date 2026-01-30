@@ -54,21 +54,52 @@ export default function Home() {
   const [uiError, setUiError] = useState<string | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedTokens, setCopiedTokens] = useState(false);
+  const [copiedIds, setCopiedIds] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const resetCopiedAfter = (setter: (v: boolean) => void, ms = 2000) => {
+    setTimeout(() => setter(false), ms);
+  };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      resetCopiedAfter(setCopied);
     } catch {
-      // Fallback for older browsers
       textareaRef.current?.select();
       document.execCommand("copy");
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      resetCopiedAfter(setCopied);
     }
   };
+
+  const handleCopyTokens = useCallback(async () => {
+    if (!result?.tokens.length) return;
+    const str = result.tokens.join(" ");
+    try {
+      await navigator.clipboard.writeText(str);
+      setCopiedTokens(true);
+      resetCopiedAfter(setCopiedTokens);
+    } catch {
+      setCopiedTokens(true);
+      resetCopiedAfter(setCopiedTokens);
+    }
+  }, [result?.tokens]);
+
+  const handleCopyIds = useCallback(async () => {
+    if (!result?.ids.length) return;
+    const str = result.ids.join(", ");
+    try {
+      await navigator.clipboard.writeText(str);
+      setCopiedIds(true);
+      resetCopiedAfter(setCopiedIds);
+    } catch {
+      setCopiedIds(true);
+      resetCopiedAfter(setCopiedIds);
+    }
+  }, [result?.ids]);
 
   const examples: Array<{ label: string; text: string }> = [
     { label: "Garhwali", text: "नमस्कार मि एक गढ़वळि टोकनिज़र छो।" },
@@ -363,8 +394,48 @@ print(व्यक्ति["नाम"])` },
             {/* Token Visualization */}
             {result && !result.error && result.tokens.length > 0 && (
               <div className="border border-gray-300 dark:border-slate-800 rounded-lg p-4 bg-gray-50 dark:bg-slate-900/50 shadow-sm dark:shadow-lg dark:shadow-black/20">
-                <div className="text-sm font-semibold text-gray-700 dark:text-slate-400 mb-3">
-                  Tokens
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="text-sm font-semibold text-gray-700 dark:text-slate-400">
+                    Tokens
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyTokens}
+                    className="p-1.5 rounded-md bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Copy tokens"
+                  >
+                    {copiedTokens ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-green-600 dark:text-green-400"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
                 <div className="flex flex-wrap gap-1 items-center min-h-[80px] sm:min-h-[100px]">
                   {result.tokens.map((token, index) => (
@@ -382,8 +453,48 @@ print(व्यक्ति["नाम"])` },
             {/* Token IDs */}
             {result && !result.error && result.ids.length > 0 && (
               <div className="border border-gray-300 dark:border-slate-800 rounded-lg p-4 bg-gray-50 dark:bg-slate-900/50 shadow-sm dark:shadow-lg dark:shadow-black/20">
-                <div className="text-sm font-semibold text-gray-700 dark:text-slate-400 mb-3">
-                  Token IDs
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="text-sm font-semibold text-gray-700 dark:text-slate-400">
+                    Token IDs
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyIds}
+                    className="p-1.5 rounded-md bg-white/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Copy token IDs"
+                  >
+                    {copiedIds ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-green-600 dark:text-green-400"
+                      >
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                    ) : (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
                 <div className="font-mono text-xs sm:text-sm text-gray-800 dark:text-slate-300 overflow-x-auto max-h-48 min-w-0">
                   <div className="flex flex-wrap gap-x-1 gap-y-1">
