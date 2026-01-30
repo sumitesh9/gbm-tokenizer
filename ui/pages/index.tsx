@@ -246,7 +246,7 @@ print(व्यक्ति["नाम"])` },
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter text to tokenize..."
-                className="w-full h-64 sm:h-96 p-4 pr-12 text-sm sm:text-base font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-gray-500"
+                className="w-full h-64 sm:h-96 p-4 pr-12 text-sm sm:text-base font-mono resize-none focus:outline-none focus:ring-0 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 placeholder-gray-500 dark:placeholder-gray-500"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     handleTokenize();
