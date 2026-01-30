@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
 
 interface TokenizeResult {
@@ -13,6 +14,9 @@ interface TokenizeResult {
     | "METHOD_NOT_ALLOWED";
   };
 }
+
+const HUGGINGFACE_LOGO_SVG =
+  "https://huggingface.co/front/assets/huggingface_logo-noborder.svg";
 
 // Color palette for token visualization - enhanced dark mode colors
 const TOKEN_COLORS = [
@@ -194,7 +198,7 @@ print(व्यक्ति["नाम"])` },
       </Head>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-7xl flex-1">
         {/* Header */}
-        <header className="mb-6 sm:mb-8">
+        <header className="mb-6 sm:mb-8 flex flex-wrap items-center justify-between gap-4">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-slate-50">
             (iso-639-3: gbm){" "}
             <a
@@ -207,6 +211,47 @@ print(व्यक्ति["नाम"])` },
             </a>{" "}
             Tokenizer
           </h1>
+          <div className="flex items-center gap-2">
+            <a
+              href="https://github.com/sumitesh9/gbm-tokenizer"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-700 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+              aria-label="GitHub repository"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+                <path d="M9 18c-4.51 2-5-2-7-2" />
+              </svg>
+            </a>
+            <a
+              href="https://huggingface.co/somu9/gbm-tokenizer"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-slate-800/80 text-gray-900 dark:text-slate-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+              aria-label="Download tokenizer from Hugging Face"
+            >
+              <span className="inline-flex p-1 rounded bg-yellow-400">
+                <Image
+                  src={HUGGINGFACE_LOGO_SVG}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                />
+              </span>
+            </a>
+          </div>
         </header>
 
         {/* Main Content */}
