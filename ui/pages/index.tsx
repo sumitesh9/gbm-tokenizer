@@ -16,7 +16,7 @@ interface TokenizeResult {
 }
 
 const HUGGINGFACE_LOGO_SVG =
-  "https://huggingface.co/front/assets/huggingface_logo-noborder.svg";
+  "https://huggingface.co/front/assets/huggingface_logo.svg";
 
 // Color palette for token visualization - enhanced dark mode colors
 const TOKEN_COLORS = [
